@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv  import load_dotenv
+from datetime import timedelta
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,12 +28,14 @@ SECRET_KEY = 'django-insecure-7rw_z7335cjx+(13b6p+4i@h$lisui$-kvj*ir@0dc9jpwwrzk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
 
-
+CORS_ALLOW_CREDENTIALS = True
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +48,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -79,12 +83,12 @@ WSGI_APPLICATION = 'AuthService.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("NAME"),
-        'USER': os.getenv("USER"),       
-        'PASSWORD': os.getenv("PASSWORD"),     
-        'HOST': os.getenv("HOST"),        
-        'PORT': os.getenv("PORT")
+        'ENGINE': 'django.db.backends.mysql',#postgresql',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),       
+        'PASSWORD': os.getenv("DB_PASSWORD"),     
+        'HOST': os.getenv("DB_HOST"),        
+        'PORT': os.getenv("DB_PORT")
     }
 }
 
@@ -139,8 +143,11 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     )
 }
-SIMPLE_JWT = {
   # It will work instead of the default serializer(TokenObtainPairSerializer).
-  "TOKEN_OBTAIN_SERIALIZER": "autenticacao.serializers.MyTokenObtainPairSerializer",
-  # ...
+  #"TOKEN_OBTAIN_SERIALIZER": "autenticacao.serializers.MyTokenObtainPairSerializer",
+SIMPLE_JWT = {
+    "TOKEN_OBTAIN_SERIALIZER": "autenticacao.serializers.MyTokenObtainPairSerializer",
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=2),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+
 }
